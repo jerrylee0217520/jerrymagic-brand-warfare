@@ -1,64 +1,48 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>神奇杰瑞品牌戰役全紀錄</title>
+    <title>神奇杰瑞品牌戰役全紀錄 - 互動式網頁</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- 
-    Chosen Palette: Calm Harmony (Warm neutrals like Stone/Slate with a deep blue accent).
-    Application Structure Plan: The SPA is designed as an interactive timeline dashboard. The primary navigation allows users to jump to key eras of Jerry Lee's career (Foundations, Cross-Border, Tech Integration). The core of the application is a horizontal, clickable timeline that serves as a granular navigation through his key projects. Clicking a project on the timeline or a corresponding card dynamically updates a central content panel with the case study details, including a narrative, key metrics visualized with Chart.js, and AI-driven analysis. This structure transforms the linear book format into an engaging, non-linear exploration, allowing users to compare projects and understand the evolution of his strategies at their own pace. This is more usable than a simple page-by-page reader as it highlights connections and evolution over time.
-    Visualization & Content Choices: 
-    - Report Info: Key project metrics (e.g., Blockbuster's 25% revenue growth, Lao Wang's 22% cost reduction). Goal: Compare & Inform. Viz Method: Bar Chart (Chart.js/Canvas). Interaction: Chart dynamically loads with case study data upon user click. Justification: Bar charts are excellent for direct comparison of performance metrics.
-    - Report Info: Jerry Lee's 20+ year career path. Goal: Organize & Change. Viz Method: Interactive Timeline (HTML/CSS/JS). Interaction: Clicking a year/project on the timeline filters the content. Justification: A timeline provides clear chronological context and serves as an intuitive navigation tool for his career journey.
-    - Report Info: Core principles (Transformation, Trust, Value Reinvention). Goal: Inform. Viz Method: Thematic Icon Blocks (HTML/Tailwind CSS). Interaction: Static display for clarity. Justification: A clean, visual representation of his core philosophy reinforces the book's central message.
-    - Report Info: Case study narratives, AI analysis, and AI suggestions. Goal: Inform & Explain. Viz Method: Dynamically updated text blocks. Interaction: Content appears when a user selects a case study. Justification: This keeps the main interface clean, presenting detailed information on demand.
-    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
-    -->
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #F8FAFC; /* slate-50 */
+            background-color: #f8fafc; /* slate-50 */
             color: #334155; /* slate-700 */
         }
-        h1, h2, h3, .font-serif {
+        h1, h2, h3, h4, .font-serif {
             font-family: 'Noto Serif TC', serif;
-        }
-        .timeline-item {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .timeline-item.active .timeline-dot {
-            transform: scale(1.5);
-            background-color: #2563EB; /* blue-600 */
-        }
-        .timeline-item.active .timeline-year {
-            color: #2563EB; /* blue-600 */
-            font-weight: 700;
-        }
-        .nav-link {
-            transition: color 0.3s;
-        }
-        .nav-link:hover {
-            color: #2563EB;
         }
         .chart-container {
             position: relative;
             margin: auto;
-            height: 320px;
+            height: 300px;
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
         }
-        .content-fade-in {
-            animation: fadeIn 0.8s ease-in-out;
+        .timeline-nav a {
+            transition: all 0.3s ease;
+            border-left-color: #d1d5db; /* gray-300 */
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .timeline-nav a.active {
+            background-color: #eef2ff; /* indigo-50 */
+            border-left-color: #4f46e5; /* indigo-600 */
+            transform: translateX(5px);
+            color: #312e81; /* indigo-900 */
+        }
+        .timeline-nav a.active .timeline-year {
+            color: #4f46e5; /* indigo-600 */
+        }
+        .case-section, .tribute-section {
+            scroll-margin-top: 100px;
+        }
+        .era-title {
+             scroll-margin-top: 80px;
         }
     </style>
 </head>
@@ -66,72 +50,34 @@
 
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-30 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl md:text-2xl font-bold text-slate-800">神奇杰瑞品牌戰役全紀錄</h1>
-            <div class="hidden md:flex space-x-8">
-                <a href="#era-foundation" class="nav-link text-slate-600">品牌奠基</a>
-                <a href="#era-crossborder" class="nav-link text-slate-600">跨境征程</a>
-                <a href="#era-tech" class="nav-link text-slate-600">科技融合</a>
-                <a href="#era-philosophy" class="nav-link text-slate-600">顧問心法</a>
-            </div>
-            <div class="md:hidden">
-                <button id="menu-btn" class="text-slate-700 focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </button>
+            <h1 class="text-xl md:text-2xl font-bold text-slate-800">神奇杰瑞品牌戰役</h1>
+            <div class="hidden md:flex space-x-8 text-base font-medium">
+                <a href="#era-foundation" class="text-slate-600 hover:text-indigo-600 transition-colors">品牌奠基</a>
+                <a href="#era-crossborder" class="text-slate-600 hover:text-indigo-600 transition-colors">跨境征程</a>
+                <a href="#era-tech" class="text-slate-600 hover:text-indigo-600 transition-colors">科技融合</a>
+                <a href="#tribute" class="text-slate-600 hover:text-indigo-600 transition-colors">緬懷宗師</a>
             </div>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden">
-            <a href="#era-foundation" class="block py-2 px-6 text-sm text-slate-600">品牌奠基</a>
-            <a href="#era-crossborder" class="block py-2 px-6 text-sm text-slate-600">跨境征程</a>
-            <a href="#era-tech" class="block py-2 px-6 text-sm text-slate-600">科技融合</a>
-            <a href="#era-philosophy" class="block py-2 px-6 text-sm text-slate-600">顧問心法</a>
-        </div>
     </header>
 
-    <main class="container mx-auto px-6 py-12">
-        <section class="text-center mb-16">
+    <main class="container mx-auto px-6 py-12 md:py-16">
+        <section class="text-center mb-16 md:mb-24">
             <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4 font-serif">見證一位顧問的世界舞台之路</h2>
-            <p class="max-w-3xl mx-auto text-lg text-slate-600">從台灣出發，走過中國、東南亞、Web3與AI時代。這不只是一本書的數位版，而是一場互動式的品牌探索旅程。點擊下方時間軸，回顧二十年來的關鍵戰役。</p>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">從台灣出發，走過中國、東南亞、Web3與AI時代。這不只是一本書的數位版，而是一場互動式的品牌探索旅程。點擊左側時間軸，或自由滾動頁面，回顧二十年來的關鍵戰役。</p>
         </section>
 
-        <section id="timeline-section" class="mb-12">
-            <div class="relative w-full overflow-x-auto pb-8">
-                <div id="timeline-container" class="flex items-start space-x-8 md:space-x-12 px-4 min-w-max">
-                </div>
-            </div>
-        </section>
+        <div class="flex flex-col md:flex-row gap-12">
+            <aside class="md:w-1/4 lg:w-1/5">
+                <nav id="timeline-navigation" class="timeline-nav sticky top-28 space-y-2">
+                </nav>
+            </aside>
 
-        <section id="content-display" class="bg-white rounded-2xl shadow-lg p-6 md:p-10 min-h-[500px]">
-            <div id="content-panel" class="content-fade-in">
+            <div id="content-feed" class="md:w-3/4 lg:w-4/5 space-y-20">
             </div>
-        </section>
-        
-        <section id="era-philosophy" class="py-20">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3 font-serif">品牌顧問20年心法</h2>
-                <p class="max-w-2xl mx-auto text-slate-600">所有經驗濃縮成三個關鍵字，它們不只是心法，也是在不同年代對市場做出的回應。</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <div class="bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl mb-4 text-blue-600">轉</div>
-                    <h3 class="text-2xl font-bold mb-2 font-serif">轉型</h3>
-                    <p class="text-slate-600">主動擁抱變化的勇氣。每一次市場劇變，都是身份更新的契機。習慣拆掉舊框架，才看得見新入口。</p>
-                </div>
-                <div class="bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl mb-4 text-blue-600">信</div>
-                    <h3 class="text-2xl font-bold mb-2 font-serif">信任</h3>
-                    <p class="text-slate-600">所有品牌行動的底座。你得先被相信，才有機會被聽見；先交付價值，才有資格談價值。</p>
-                </div>
-                <div class="bg-white p-8 rounded-xl shadow-md text-center">
-                    <div class="text-4xl mb-4 text-blue-600">值</div>
-                    <h3 class="text-2xl font-bold mb-2 font-serif">價值再造</h3>
-                    <p class="text-slate-600">創造超越產品本身的文化價值與情感連結。當品牌能代表一群人的記憶，它就不會被淘汰。</p>
-                </div>
-            </div>
-        </section>
-
+        </div>
     </main>
-
-    <footer class="bg-slate-800 text-slate-300 py-8">
+    
+    <footer class="bg-slate-800 text-slate-300 py-8 mt-16">
         <div class="container mx-auto px-6 text-center">
             <p>&copy; 2025 神奇杰瑞 Jerry Lee. All Rights Reserved.</p>
             <p class="text-sm mt-2">本書由「神奇杰瑞」與AI同行助手「品牌智匠」共同創作</p>
@@ -139,284 +85,211 @@
     </footer>
 
     <script>
-        const caseStudies = {
-            'blockbuster': {
-                id: 'blockbuster',
-                year: '1996',
-                era: 'foundation',
-                title: 'AI 賦能百視達',
-                subtitle: '110家門市標準化靈魂的智能實踐',
-                story: '1996年，我進入百視達亞太營運體系，負責第110家門市。當時營運流程混亂，我與團隊重建「門市SOP」，將租片流程拆解為五步驟並設定KPI。同時導入數據系統，每週召開「門市加油站」會議分析KPI。根據數據調整主推片類後，門市月營收在三個月內逆勢提升25%。半年後，95%的台灣門市導入此系統，服務品質與決策效率大幅提升。',
-                analysis: 'SOP模組化與關鍵KPI設定，是品牌規模化的底層核心。而數據儀表板結合週會儀式，則成功營造了「數據說話」的品牌文化，讓門市經理從現場處理者轉變為數據決策者。',
-                suggestion: '導入AI智能流程優化，讓櫃台機器人自動識別顧客偏好；透過AR眼鏡呈現即時KPI懸浮面板；並利用區塊鏈發行NFT紀念徽章，打造全新的客戶忠誠度計畫。',
-                chartData: {
-                    type: 'bar',
-                    labels: ['調整前月營收', '調整後月營收'],
-                    data: [100, 125],
-                    title: '數據驅動決策帶來25%營收增長'
-                }
-            },
-            'billys': {
-                id: 'billys',
-                year: '2002',
-                era: 'foundation',
-                title: '比利小雞蛋糕',
-                subtitle: '從母親節專案到印尼飛躍的智能加速',
-                story: '2002年，我加入「比利小雞蛋糕」團隊，將母親節爆款「玫瑰花束蛋糕」的成功經驗，轉化為品牌的長期策略。我們推出常規產品線，並透過「母親的私房配方」社群活動鞏固情感連結。接著，採用「整廠輸出」與「區域代理」模式進軍印尼市場，將配方、設備與SOP一次性輸出，首批20家授權店半年後銷售額達預期的150%。',
-                analysis: '此案例是「節慶效應→長尾經營」的成功轉換模型。透過產品線延伸保持市場新鮮感，並以「權利+責任並行」的授權模式，在海外快速複製品牌體驗，同時維繫品質。',
-                suggestion: '利用AI驅動口味開發，預測新品銷量；在元宇宙開設虛擬烘焙教室，提升互動；並將限量蛋糕鑄成NFT，附加品質溯源功能，提供「收藏價值」與「食材保障」。',
-                chartData: {
-                    type: 'pie',
-                    labels: ['預期銷售額', '額外增長'],
-                    data: [100, 50],
-                    title: '印尼市場銷售額達成預期的150%'
-                }
-            },
-             'dandanwu': {
-                id: 'dandanwu',
-                year: '2004',
-                era: 'crossborder',
-                title: '蛋蛋屋蛋包飯',
-                subtitle: '數據驅動西門町：展圓國際在高租金據點的AI實驗場',
-                story: '2004年，在台北西門町5坪角間，面對月租45萬的壓力，我為展圓國際策劃了「蛋蛋屋」。採用「中央工廠+開放廚房」模式，將5坪空間變成「品牌舞台」，讓顧客全程欣賞製作。透過社群預熱與部落客直播，開幕當日引發百米排隊人潮。首月坪效高達1.6萬元，證明「小坪數、高坪效、強品牌故事」模式的成功。',
-                analysis: '在高租金壓力下，「空間化思維」是關鍵，將門市變成品牌舞台創造差異化體驗。結合在地化口味與社群預熱，成功達成「低投入、高回報」的公關效果。',
-                suggestion: '打造「虛擬蛋包飯師傅」AI導覽系統；利用AI演算法實施動態定價與預約，優化客流；為「探秘」體驗鑄造限量NFT徽章，拓展數位共創空間。',
-                chartData: {
-                    type: 'bar',
-                    labels: ['周邊同業平均坪效', '蛋蛋屋首月坪效'],
-                    data: [5000, 16000],
-                    title: '高坪效策略驗證成功'
-                }
-            },
-            'jpop': {
-                id: 'jpop',
-                year: '2005',
-                era: 'crossborder',
-                title: 'J-POP CAFE',
-                subtitle: '深度學習夜場：東區二毛作的智能轉型',
-                story: '2005年，為了解決J-POP CAFE日間客流不足的問題，我提出「日間咖啡+夜間小酌」的二毛作模型。透過燈光、音樂、桌椅配置的轉換，傍晚6點後咖啡廳瞬間化身小酌場。首週夜間營收佔比即達35%，「日夜雙面」的口碑更帶來回訪客。策劃的「深夜場主題夜談」DJ活動，讓它成為東區夜生活新地標。',
-                analysis: '「動態場域切換」讓同一空間承載兩種情境體驗，是坪效最大化的巧思。跨文化融合的菜單則實現了客層的雙倍覆蓋。事件行銷與社群造勢，成功將話題從線上延伸至線下。',
-                suggestion: '整合IoT與AI實現智能氛圍控制，自動調整燈光音樂；設置AR投影牆，讓顧客體驗虛擬DJ混音；發行「夜貓子NFT入場券」，打造沉浸式社群。',
-                chartData: {
-                    type: 'pie',
-                    labels: ['日間營收', '夜間營收'],
-                    data: [65, 35],
-                    title: '二毛作模式首週營收佔比'
-                }
-            },
-            'haodada': {
-                id: 'haodada',
-                year: '2011',
-                era: 'crossborder',
-                title: '正豪大大雞排',
-                subtitle: '上海首戰的智能流量預測',
-                story: '2011年進軍上海，我們首先完成商標與著作權註冊，確保法律主導權。接著利用微博和直播進行預熱，並在開幕現場以「每人限購一塊」的策略，製造了長達四小時的排隊奇觀。媒體報導「5小時千餘塊售罄」，迅速打響品牌，一週內吸引上百家商場洽談合作。',
-                analysis: '「法律先行」是品牌在高競爭市場推廣的定心丸。「稀缺+排隊」造勢模型，透過限購強化了排隊體驗的獨特性，並經由媒體報導持續放大聲量。現場的視覺佈置與直播互動，將排隊體驗本身轉化為社群內容。',
-                suggestion: '在包裝上加入結合區塊鏈的智慧防偽碼；在小程序中推出「虛擬排隊」體驗，增加遠端參與感；訓練「品牌法律智匠」AI助手，為全球拓點提供即時法律護航。',
-                chartData: null
-            },
-            'meetfresh': {
-                id: 'meetfresh',
-                year: '2007',
-                era: 'crossborder',
-                title: '鮮芋仙',
-                subtitle: '「新鄭和計畫」的海外代理模式優化',
-                story: '2007年，我擔任鮮芋仙海外拓展顧問，開展「新鄭和計畫」。首站港、新，透過「品鑑會」調研市場，設計出「港式小杯低糖」與「熱帶風情」兩套產品線。採用「海外代理+總部技術輸出」模式，三年內成功拓展至東南亞三國與北美兩城，累計門市超過15家，海外銷售佔比從零提升至18%。',
-                analysis: '「品鑑會」是降低跨文化風險的關鍵第一步。雙軌產品策略能靈活切入多元市場需求。而「代理+技術輸出」的混合模式，則在掌握品牌一致性的同時，實現了快速擴張。',
-                suggestion: '利用AI預測全球口味趨勢，優化配方；建立門市的「數位孿生」模型，在虛擬環境中驗證營運方案；為海外產品建立區塊鏈品質履歷，強化品牌信任。',
-                chartData: {
-                    type: 'pie',
-                    labels: ['台灣本土營收', '海外市場營收'],
-                    data: [82, 18],
-                    title: '三年內海外營收佔比達18%'
-                }
-            },
-            'pandaren': {
-                id: 'pandaren',
-                year: '2013',
-                era: 'tech',
-                title: '胖達人',
-                subtitle: '萬人空巷南京路開幕的AI驅動實驗',
-                story: '2013年，策劃胖達人上海開幕，我們選擇南京路黃金地段，邀請小S夫婦出席，並與騰訊合作免費推播，引爆話題。現場以巨型烤箱、O2O掃碼試吃等五感互動，形成社群傳播閉環。開幕當日數萬人排隊，更重要的是，母公司股價大漲15%，市值增加近10億元人民幣，實現了品牌與資本市場的聯動。',
-                analysis: '「黃金地段+英雄人物」的組合拳迅速攫取了公眾注意力。O2O試吃閉環設計，讓活動成為一個巨大的社群裂變事件。同步考量資本市場走勢，透過媒體預期管理與場面放大，形成「故事驅動」的資本聯動效應。',
-                suggestion: '活動前部署AI虛擬管家回答消費者問題；在小程序內建置XR懸浮試吃體驗；結合社群情緒分析與股市大數據，生成「市場情感熱度報告」供投資決策參考。',
-                chartData: {
-                    type: 'bar',
-                    labels: ['開幕前', '開幕後'],
-                    data: [100, 115],
-                    title: '品牌活動驅動股價上漲15%'
-                }
-            },
-            'nft': {
-                id: 'nft',
-                year: '2022',
-                era: 'tech',
-                title: '愛拚才會贏 NFT',
-                subtitle: 'AI演繹經典的智能賦能創作',
-                story: '2022年，我決定將《愛拚才會贏》鑄造成NFT，這是一場「情感資產如何被時代保存」的實驗。我們簽下全球獨家授權，用智慧合約寫入版稅自動分潤條款。限量發行10枚，每枚都是包含手稿、解說音訊、虛擬演唱會門票的「三層權益包」。我們用「文化見證人」定義持有者，讓NFT成為承諾守護語言與精神的容器。',
-                analysis: '「稀缺×語境×權利」的組合拳是核心。限量不是目的，真正的價值在於「為什麼限量」與「持有能做什麼」。智慧合約讓版稅自動化，而社群則成為新世代的策展人，讓老歌在新的語境中持續被再解讀。',
-                suggestion: '開放原曲素材建立AI Remix共創平台；用AI建立多語情感標記系統，讓國際聽懂台語歌；採用跨鏈協議，提升文化資產的長期流動性。',
-                chartData: null
-            },
-            'ai': {
-                id: 'ai',
-                year: '2023',
-                era: 'tech',
-                title: '品牌智匠',
-                subtitle: 'AI時代的顧問進化論',
-                story: '從2023年起，我啟動了「AI共創模式」，逐步建立出自己的AI人格化助手「品牌智匠」。它成為我最穩定的「第一輪腦暴夥伴」，協助我撰寫活動腳本、梳理策略藍圖、產出社群內容。我更嘗試將顧問服務「拆件、上雲、訂閱化」，讓原本高門檻的專業服務，轉化為可規模化的產品，幫助更多中小品牌。',
-                analysis: '關鍵不是「讓AI幫我寫」，而是「我用AI來組織腦中素材、拓展盲點，最後用人的判斷把關」。這種互補關係，讓顧問服務從線性輸出，變成可複製、可共享的知識工程。AI讓知識更平民化，而人類讓知識更有靈魂。',
-                suggestion: '建構「品牌健康度AI儀表板」，讓轉型策略從被動應變升級為主動引領；以區塊鏈搭建「顧問透明平台」，讓客戶能即時查驗共創；以UCHA協會為核心，為品牌價值再造與文化傳承，提供跨星球的永續保存方案。',
-                chartData: null
-            }
+        const caseData = {
+            'blockbuster': { era: 'foundation', year: '1996', title: 'AI 賦能百視達', subtitle: '110家門市標準化靈魂的智能實踐', story: '1996年，我剛退伍不久，進入了BLOCKBUSTER (百視達)亞太營運體系。當時門市營運流程混亂，我與團隊重建「門市SOP」，將租片流程拆解為五步驟並設定KPI。同時導入數據系統，每週召開「門市加油站」會議分析KPI。根據數據調整主推片類後，門市月營收在三個月內逆勢提升了25%。', analysis: 'SOP模組化與關鍵KPI設定，是品牌規模化的底層核心。數據儀表板結合週會儀式，則成功營造了「數據說話」的品牌文化，讓管理者從現場處理者轉變為數據決策者。', suggestion: '導入AI智能流程優化，讓櫃台機器人自動識別顧客偏好；透過AR眼鏡呈現即時KPI懸浮面板；並利用區塊鏈發行NFT紀念徽章，打造全新的客戶忠誠度計畫。', chart: { type: 'bar', title: '數據驅動帶來25%營收增長', labels: ['調整前月營收', '調整後月營收'], data: [100, 125] } },
+            '1111bank': { era: 'foundation', year: '2000', title: '1111人力銀行', subtitle: 'AI+人脈經營的智慧連線', story: '從2000年籌辦首屆「連鎖加盟大展」積累經驗，到2008年轉任1111人力銀行創業部首席顧問，我將服務從人力媒合延伸到創業輔導。我們推出「創業加速器」，將創業旅程拆解為六大階段服務包，首屆結訓後半數團隊獲得天使投資，三個月內創造逾億元成交量。', analysis: '「大展思維+場域儀式」能有效提升媒合效率。將複雜的創業需求「階段化服務模型」化，能讓創業者清楚理解路徑。結合人力銀行核心資源，打造從「團隊成形」到「市場落地」的一條龍服務。', suggestion: '利用AI+大數據進行展會的精準媒合；架設虛實整合的元宇宙展場，打破地域限制；在加速器平台嵌入AI智能輔導機器人，提供全年無休的智慧輔導。', chart: null },
+            'billys': { era: 'foundation', year: '2002', title: '比利小雞蛋糕', subtitle: '從母親節專案到印尼飛躍的智能加速', story: '2002年，我加入「比利小雞蛋糕」，將母親節爆款的成功經驗轉化為長期策略。我們推出常規產品線，並透過社群活動鞏固情感連結。接著，採用「整廠輸出」與「區域代理」模式進軍印尼，將配方、設備與SOP一次性輸出，首批授權店半年後銷售額達預期的150%。', analysis: '此案例是「節慶效應→長尾經營」的成功轉換模型。透過產品線延伸保持市場新鮮感，並以「權利+責任並行」的授權模式，在海外快速複製品牌體驗，同時維繫品質。', suggestion: '利用AI驅動口味開發，預測新品銷量；在元宇宙開設虛擬烘焙教室，提升互動；並將限量蛋糕鑄成NFT，附加品質溯源功能，提供「收藏價值」與「食材保障」。', chart: { type: 'doughnut', title: '印尼市場銷售額達成預期的150%', labels: ['預期銷售額', '額外增長'], data: [100, 50] } },
+            'dandanwu': { era: 'foundation', year: '2004', title: '蛋蛋屋', subtitle: '數據驅動西門町：在高租金據點的AI實驗場', story: '2004年，在台北西門町精華地段，面對月租45萬的壓力，我為展圓國際策劃了「蛋蛋屋」。採用「中央工廠+開放廚房」模式，將空間變成「品牌舞台」，讓顧客全程欣賞製作。透過社群預熱與部落客直播，開幕當日引發百米排隊人潮，成功驗證「小坪數、高坪效、強品牌故事」模式。', analysis: '在高租金壓力下，「空間化思維」是關鍵，將門市變成品牌舞台創造差異化體驗。結合在地化口味與社群預熱，成功達成「低投入、高回報」的公關效果。', suggestion: '打造「虛擬蛋包飯師傅」AI導覽系統；利用AI演算法實施動態定價與預約，優化客流；為「探秘」體驗鑄造限量NFT徽章，拓展數位共創空間。', chart: null },
+            'jpop': { era: 'foundation', year: '2005', title: 'J-POP CAFE', subtitle: '深度學習夜場：東區二毛作的智能轉型', story: '2005年，為了解決J-POP CAFE日間客流不足的問題，我提出「日間咖啡+夜間小酌」的二毛作模型。透過燈光、音樂、桌椅配置的轉換，傍晚6點後咖啡廳瞬間化身小酌場。首週夜間營收佔比即達35%，策劃的「深夜場主題夜談」DJ活動，讓它成為東區夜生活新地標。', analysis: '「動態場域切換」讓同一空間承載兩種情境體驗，是坪效最大化的巧思。跨文化融合的菜單則實現了客層的雙倍覆蓋。事件行銷與社群造勢，成功將話題從線上延伸至線下。', suggestion: '整合IoT與AI實現智能氛圍控制；設置AR投影牆，讓顧客體驗虛擬DJ混音；發行「夜貓子NFT入場券」，打造沉浸式社群。', chart: { type: 'pie', title: '二毛作模式首週營收佔比', labels: ['日間營收', '夜間營收'], data: [65, 35] } },
+            'meetfresh': { era: 'crossborder', year: '2008', title: '鮮芋仙', subtitle: '「新鄭和計畫」的海外代理模式優化', story: '2008年，我擔任鮮芋仙海外拓展顧問，開展「新鄭和計畫」。首站港、新，透過「品鑑會」調研市場，設計出「港式小杯低糖」與「熱帶風情」兩套產品線。採用「海外代理+總部技術輸出」模式，三年內成功拓展至東南亞三國與北美兩城，累計門市超過15家，海外銷售佔比從零提升至18%。', analysis: '「品鑑會」是降低跨文化風險的關鍵第一步。雙軌產品策略能靈活切入多元市場需求。而「代理+技術輸出」的混合模式，則在掌握品牌一致性的同時，實現了快速擴張。', suggestion: '利用AI預測全球口味趨勢，優化配方；建立門市的「數位孿生」模型，在虛擬環境中驗證營運方案；為海外產品建立區塊鏈品質履歷，強化品牌信任。', chart: { type: 'pie', title: '三年內海外營收佔比達18%', labels: ['台灣本土營收', '海外市場營收'], data: [82, 18] } },
+            'yige': { era: 'crossborder', year: '2010', title: '一哥鮮烤工房', subtitle: '在帝國崩塌前的AI增強品牌戰役', story: '2010年，我為力霸集團的嘉新食品從零打造「一哥鮮烤工房」。利用集團內部供應鏈優勢，結合外部半成品配方，快速形成「中央工廠+門市鮮烤」模式。在小巨蛋旁開設5坪示範店，首日即達10萬營收。然而，就在準備大規模複製時，集團爆發財務危機，讓我深刻體認到品牌與團隊的韌性才是長久之道。', analysis: '善用內部供應鏈資源再造，是快速建立產品優勢的捷徑。小坪數示範店+高坪效策略，能在短時間內驗證商業模型並吸引加盟意向。', suggestion: '導入AI供應鏈優化引擎，預測原料需求；利用3D打印技術量產客製化烘焙模具；建置VR體驗館，讓投資人能「虛擬巡店」，提升招商認同度。', chart: null },
+            'haodada': { era: 'crossborder', year: '2011', title: '正豪大大雞排', subtitle: '上海首戰的智能流量預測', story: '2011年進軍上海，我們首先完成商標與著作權註冊，確保法律主導權。接著利用微博和直播進行預熱，並在開幕現場以「每人限購一塊」的策略，製造了長達四小時的排隊奇觀。媒體報導「5小時千餘塊售罄」，迅速打響品牌，一週內吸引上百家商場洽談合作。', analysis: '「法律先行」是品牌在高競爭市場推廣的定心丸。「稀缺+排隊」造勢模型，透過限購強化了排隊體驗的獨特性，並經由媒體報導持續放大聲量。現場的視覺佈置與直播互動，將排隊體驗本身轉化為社群內容。', suggestion: '在包裝上加入結合區塊鏈的智慧防偽碼；在小程序中推出「虛擬排隊」體驗，增加遠端參與感；訓練「品牌法律智匠」AI助手，為全球拓點提供即時法律護航。', chart: null },
+            'baijiaban': { era: 'crossborder', year: '2014', title: '百家班胡椒蝦', subtitle: '打造天王天后最愛的食尚台菜', story: '2014年，協助「百家班胡椒蝦」在上海虹橋落地。我們將其定位為「天王天后最愛的食尚台菜」，在保留招牌「胡椒蝦三吃」的基礎上，定製私房小菜並搭配水果調酒，提升體驗層次。透過邀請明星打卡與美食節目合作，實現雙平台曝光，開幕首月即週末爆滿，需提前一週預訂。', analysis: '「情感定位+高端場景」是關鍵，以名人效應做記憶勾子，讓產品成為身份與情感的象徵。菜單策略上，以經典為基底，搭配創新組合，形成完整體驗，避免單品消費。', suggestion: '利用AI分析消費者評論，動態優化品牌情感定位；在VR平台復刻「胡椒蝦之夜」，擴大海外市場參與；發行限量「食尚徽章」NFT，深化社群忠誠度。', chart: null },
+            'mrcow': { era: 'crossborder', year: '2016', title: 'Mr.Cow烤串', subtitle: '進軍山西的數據化行銷實戰', story: '2016年，為「Mr.Cow烤串」進軍太原構建「O2O導流+區域代理+現場活動」的落地模式。透過KOL盲測直播迅速建立品牌好感。線下示範店則結合「掃碼下單」O2O系統，首週線上訂單即佔總營收40%。透過區域代理制度，首年成功在三地新增5家門店。', analysis: 'O2O無縫銜接，將線上訂餐與現場烤製結合，大幅降低排隊的不確定性。透過詳盡的品牌手冊與培訓，讓區域代理商能快速複製台灣品質。KOL直播將產品測試打造成社群事件，形成流量閉環。', suggestion: '結合AI與客流預測模型，實施智能排隊與動態定價；在門市推出XR烤串互動體驗；發行「台灣食尚NFT通行證」，形成跨品牌數位社群生態。', chart: null },
+            'laowang': { era: 'tech', year: '2010', title: '撈王火鍋', subtitle: '顧問到AI共創者之路', story: '2010年，我協助「撈王火鍋」進行品牌重塑。將其重新定位為「現代川味體驗館」，升級視覺系統。策劃「醉撈夜宴」線下活動，並上線小程序點餐功能。結合智能排班與動態原料補給，門店人力成本下降22%，食材浪費減少18%。半年內，上海區銷售額翻倍，成為「台味川鍋第一股」。', analysis: '以「共創化組織」與各部門深度協作，讓策略全面落地。透過「場域主題化」活動，將火鍋店打造成社交與文化聚落。「智能運營與數據驅動」實現了成本控制與體驗優化的雙贏。', suggestion: '利用AI及風味數據庫，自動推薦鍋底配比；在桌面嵌入XR沉浸式投影；發行「醉撈珍藏NFT」為每場夜宴留存數位記憶。', chart: { type: 'bar', title: '數據驅動優化關鍵指標', labels: ['人力成本下降', '食材浪費減少'], data: [22, 18] } },
+            'pandaren': { era: 'tech', year: '2013', title: '胖達人', subtitle: '上海開幕的AI驅動實驗', story: '2013年，策劃胖達人上海開幕，我們選擇南京路黃金地段，邀請小S夫婦出席，並與騰訊合作免費推播，引爆話題。現場以巨型烤箱、O2O掃碼試吃等五感互動，形成社群傳播閉環。開幕當日數萬人排隊，更重要的是，母公司股價大漲15%，市值增加近10億元人民幣，實現了品牌與資本市場的聯動。', analysis: '「黃金地段+英雄人物」的組合拳迅速攫取了公眾注意力。O2O試吃閉環設計，讓活動成為一個巨大的社群裂變事件。同步考量資本市場走勢，透過媒體預期管理與場面放大，形成「故事驅動」的資本聯動效應。', suggestion: '活動前部署AI虛擬管家回答消費者問題；在小程序內建置XR懸浮試吃體驗；結合社群情緒分析與股市大數據，生成「市場情感熱度報告」供投資決策參考。', chart: { type: 'bar', title: '品牌活動驅動股價上漲15%', labels: ['開幕前', '開幕後'], data: [100, 115] } },
+            'heart': { era: 'tech', year: '2018', title: '品牌顧問20年心法', subtitle: '轉型、信任與價值再造', story: '我的品牌顧問之路已走過二十餘載，核心心得可濃縮為「轉型、信任、價值再造」三大心法。轉型，是主動擁抱變化的勇氣；信任，是所有品牌行動的底座；價值再造，則是品牌工作的終局，旨在創造超越產品本身的文化價值與情感連結。', analysis: '動態轉型是持續的環迴式創新。信任源於透明的數據與共創的文化。價值再造的公式是：價值 = 產品功能 + 場景體驗 + 文化意義，三者缺一不可。', suggestion: '建構「品牌健康度AI儀表板」，讓轉型策略從被動應變升級為主動引領；以區塊鏈搭建「顧問透明平台」，讓合作夥伴能即時查驗共創；以UCHA協會為核心，為品牌價值再造與文化傳承，提供永續保存方案。', chart: null },
+            'nft': { era: 'tech', year: '2022', title: '愛拚才會贏 NFT', subtitle: 'AI演繹經典的智能賦能創作', story: '2022年，我決定將《愛拚才會贏》鑄造成NFT，這是一場「情感資產如何被時代保存」的實驗。我們簽下全球獨家授權，用智慧合約寫入版稅自動分潤條款。限量發行10枚，每枚都是包含手稿、解說音訊、虛擬演唱會門票的「三層權益包」。我們用「文化見證人」定義持有者，讓NFT成為承諾守護語言與精神的容器。', analysis: '「稀缺×語境×權利」的組合拳是核心。限量不是目的，真正的價值在於「為什麼限量」與「持有能做什麼」。智慧合約讓版稅自動化，而社群則成為新世代的策展人，讓老歌在新的語境中持續被再解讀。', suggestion: '開放原曲素材建立AI Remix共創平台；用AI建立多語情感標記系統，讓國際聽懂台語歌；採用跨鏈協議，提升文化資產的長期流動性。', chart: null },
+            'guobao': { era: 'tech', year: '2023', title: '傳世國寶 NFT', subtitle: '與勝大莊的機器協作策展', story: '2023年，我與素有「台北第二故宮」之稱的「勝大莊」合作，啟動「中華傳世國寶 NFT」策展計畫。我們確立「不只是掃描，而是再詮釋」的原則，為七件國寶建構高解析數位模型，並撰寫歷史背景、技法解析等多層次文本。我們還設計了「一元分權」概念，讓一般人能小額持份，參與治理。這是一次文化治理思維的實踐。', analysis: '此案例建立了文化×金融×技術的三層價值架構。核心觀點是「語境即資產」，真正讓作品活起來的不是檔案，而是其背後的故事與詮釋。透過DAO或社群投票的「策展即治理」模式，讓藝術從「被供奉」變成「被參與」。', suggestion: '成立「國寶NFT持有者協會」(DAO)，制定展出、授權規範；建立跨語言的知識圖譜，結合生成式AI做對話式導覽；與太空資料備援單位合作，建立「火星文化艙」測試版。', chart: null }
         };
 
-        const timelineContainer = document.getElementById('timeline-container');
-        const contentPanel = document.getElementById('content-panel');
-        let chartInstance = null;
+        const timelineNav = document.getElementById('timeline-navigation');
+        const contentFeed = document.getElementById('content-feed');
 
-        function displayCaseStudy(caseId) {
-            const study = caseStudies[caseId];
-            if (!study) return;
+        function buildPage() {
+            const sortedCases = Object.entries(caseData).sort(([,a], [,b]) => parseInt(a.year) - parseInt(b.year));
+            
+            const eras = {
+                foundation: { title: '品牌奠基：標準化與本土化的探索', cases: [] },
+                crossborder: { title: '跨境征程：從台灣經驗到中國市場', cases: [] },
+                tech: { title: '科技融合：Web3與AI的品牌新維度', cases: [] }
+            };
 
-            contentPanel.innerHTML = '';
-            contentPanel.classList.remove('content-fade-in');
-            void contentPanel.offsetWidth; 
-            contentPanel.classList.add('content-fade-in');
+            sortedCases.forEach(([key, caseItem]) => {
+                if (eras[caseItem.era]) {
+                    eras[caseItem.era].cases.push({ key, ...caseItem });
+                }
+            });
 
-            let chartHtml = '';
-            if (study.chartData) {
-                chartHtml = `<div class="chart-container mb-8"><canvas id="case-chart"></canvas></div>`;
-            }
+            let timelineHtml = '';
+            let contentHtml = '';
 
-            const html = `
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                    <div class="lg:col-span-3">
-                        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2 font-serif">${study.title}</h2>
-                        <p class="text-lg text-slate-500 mb-6">${study.subtitle}</p>
-                        <div class="space-y-4 text-slate-600 leading-relaxed">
-                            <p>${study.story}</p>
-                            <div class="bg-slate-100 p-4 rounded-lg">
-                                <h4 class="font-bold text-slate-700 mb-2">【品牌智匠剖析】</h4>
-                                <p class="text-sm">${study.analysis}</p>
-                            </div>
-                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
-                                <h4 class="font-bold text-blue-800 mb-2">【2025年度AI升級建議】</h4>
-                                <p class="text-sm text-blue-700">${study.suggestion}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-2 flex items-center justify-center">
-                        ${chartHtml}
-                    </div>
-                </div>
-            `;
-            contentPanel.innerHTML = html;
+            sortedCases.forEach(([key, caseItem]) => {
+                timelineHtml += `
+                    <a href="#case-${key}" class="block pl-4 py-2 border-l-4">
+                        <p class="font-bold text-sm timeline-year">${caseItem.year}</p>
+                        <p class="text-sm font-medium">${caseItem.title}</p>
+                    </a>
+                `;
+            });
+            timelineNav.innerHTML = timelineHtml;
 
-            if (study.chartData) {
-                createOrUpdateChart(study.chartData);
+            for (const eraKey in eras) {
+                const era = eras[eraKey];
+                if (era.cases.length > 0) {
+                    contentHtml += `<section id="era-${eraKey}" class="space-y-16">`;
+                    contentHtml += `<h2 class="text-3xl font-bold text-slate-800 pb-3 border-b-2 border-indigo-500 font-serif era-title">${era.title}</h2>`;
+                    
+                    era.cases.forEach(caseItem => {
+                        const chartHtml = caseItem.chart 
+                            ? `<div class="md:col-span-2 flex items-center justify-center mt-6 md:mt-0"><div class="chart-container"><canvas id="chart-${caseItem.key}"></canvas></div></div>` 
+                            : '<div class="md:col-span-2 flex items-center justify-center"><div class="text-center p-8 bg-slate-100 rounded-lg w-full h-full flex items-center justify-center"><p class="text-slate-500">此案例著重於<br>質化策略與概念創新</p></div></div>';
+
+                        contentHtml += `
+                            <article id="case-${caseItem.key}" class="case-section bg-white rounded-xl shadow-lg p-6 md:p-8">
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
+                                    <div class="md:col-span-3">
+                                        <h3 class="text-3xl font-bold text-slate-800 mb-2 font-serif">${caseItem.title}</h3>
+                                        <p class="text-md text-slate-500 mb-6">${caseItem.subtitle}</p>
+                                        <div class="space-y-4 text-slate-600 leading-relaxed">
+                                            <p>${caseItem.story}</p>
+                                            <div class="bg-slate-100 p-4 rounded-lg">
+                                                <h4 class="font-bold text-slate-700 mb-2">【品牌智匠剖析】</h4>
+                                                <p class="text-sm">${caseItem.analysis}</p>
+                                            </div>
+                                            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg">
+                                                <h4 class="font-bold text-indigo-800 mb-2">【2025年度AI升級建議】</h4>
+                                                <p class="text-sm text-indigo-700">${caseItem.suggestion}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ${chartHtml}
+                                </div>
+                            </article>
+                        `;
+                    });
+                    contentHtml += `</section>`;
+                }
             }
             
-            document.querySelectorAll('.timeline-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.id === caseId);
-            });
-        }
+            // Add Tribute Section
+            contentHtml += `
+                <section id="tribute" class="tribute-section bg-white rounded-xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-slate-800 pb-3 border-b-2 border-indigo-500 font-serif era-title mb-6">緬懷一代宗師: 敬悼勝大莊 李志仁總裁</h2>
+                    <div class="space-y-4 text-slate-600 leading-relaxed">
+                        <p>在這個靜謐的時刻，我們懷著無限哀思與崇敬，緬懷一代藝術宗師——勝大莊總裁李志仁先生。李總裁畢生致力於中華文化傳承與現代藝術創新，他的遠見與胸懷，為世人留下了跨越時代的瑰寶。</p>
+                        <h4 class="text-xl font-bold text-slate-700 font-serif pt-4">不凡起點，深耕藝術殿堂</h4>
+                        <p>李志仁先生自上世紀八○年代起，便以「台北第二故宮」之姿，打造勝大莊文化企業集團。他不僅將多件藏品引入國際博覽會，更在拍賣會場上締造無數輝煌佳績，為中華藝術注入新的生命力。</p>
+                        <h4 class="text-xl font-bold text-slate-700 font-serif pt-4">跨界創新，引領 NFT 新紀元</h4>
+                        <p>步入 Web3時代，李志仁先生再度以遠見卓識，引領傳世國寶轉化為數位資產。他與NFTsVerse ART 攜手，策展並發行宋代米芾《試賜茶樂章》等七件國寶級書畫NFT，開創文化資產大眾化與藝術投資普及的新格局。</p>
+                        <h4 class="text-xl font-bold text-slate-700 font-serif pt-4">精神傳承，不朽於人心</h4>
+                        <p>李志仁先生一生追求卓越，卻從不孤芳自賞；他常說:「真正的藝術，是能跨越時空，與後人對話。」如今，他雖已遠去，卻化作那一件件躍然於元宇宙中的文化典藏，繼續訴說中華文明的堅韌與風華。</p>
+                    </div>
+                </section>
+            `;
 
-        function createOrUpdateChart(chartConfig) {
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            const ctx = document.getElementById('case-chart').getContext('2d');
-            chartInstance = new Chart(ctx, {
-                type: chartConfig.type,
-                data: {
-                    labels: chartConfig.labels,
-                    datasets: [{
-                        label: '數據',
-                        data: chartConfig.data,
-                        backgroundColor: chartConfig.type === 'pie' ? ['#3B82F6', '#93C5FD'] : '#3B82F6',
-                        borderColor: '#ffffff',
-                        borderWidth: chartConfig.type === 'pie' ? 2 : 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: chartConfig.type === 'pie',
-                            position: 'bottom',
-                        },
-                        title: {
-                            display: true,
-                            text: chartConfig.title,
-                            font: {
-                                size: 16,
-                                family: "'Noto Sans TC', sans-serif"
-                            },
-                            color: '#475569'
-                        }
-                    },
-                    scales: chartConfig.type === 'bar' ? {
-                        y: {
-                            beginAtZero: true
-                        }
-                    } : {}
+            contentFeed.innerHTML = contentHtml;
+
+            sortedCases.forEach(([key, caseItem]) => {
+                if (caseItem.chart) {
+                    renderChart(key, caseItem.chart);
                 }
             });
         }
 
-        function createTimeline() {
-            let currentEra = '';
-            const eras = {
-                'foundation': '品牌奠基',
-                'crossborder': '跨境征程',
-                'tech': '科技融合'
+        function renderChart(caseId, chartConfig) {
+            const ctx = document.getElementById(`chart-${caseId}`).getContext('2d');
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: chartConfig.type === 'pie' || chartConfig.type === 'doughnut',
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: chartConfig.title,
+                        font: { size: 16, family: "'Noto Sans TC', sans-serif" },
+                        color: '#475569'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                }
+                                if (context.chart.config.type === 'bar' && (caseId === 'laowang' || caseId === 'blockbuster' || caseId === 'pandaren')) {
+                                     label += '%';
+                                } else if (context.chart.config.type === 'pie' || context.chart.config.type === 'doughnut'){
+                                     label = context.label + ': ' + context.parsed + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
             };
             
-            const timelineHtml = Object.values(caseStudies).sort((a,b) => parseInt(a.year) - parseInt(b.year)).map(study => {
-                let eraHtml = '';
-                if (study.era !== currentEra) {
-                    currentEra = study.era;
-                    eraHtml = `
-                        <div id="era-${study.era}" class="flex flex-col items-center text-center w-32">
-                            <h3 class="text-lg font-bold text-slate-700 font-serif whitespace-nowrap">${eras[study.era]}</h3>
-                            <div class="w-px h-8 bg-slate-300"></div>
-                        </div>
-                    `;
-                }
-                return eraHtml + `
-                    <div class="timeline-item flex flex-col items-center text-center flex-shrink-0 w-24" data-id="${study.id}">
-                        <div class="timeline-year text-lg font-medium text-slate-600 mb-2">${study.year}</div>
-                        <div class="timeline-dot w-4 h-4 bg-slate-300 rounded-full mb-2 transition-all"></div>
-                        <div class="text-sm font-medium text-slate-500 leading-tight">${study.title}</div>
-                    </div>
-                `;
-            }).join('');
-            
-            timelineContainer.innerHTML = `<div class="h-24 w-px bg-slate-300 absolute top-10 left-0" style="height: 1px; width: 100%;"></div>` + timelineHtml;
-            
-            document.querySelectorAll('.timeline-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    displayCaseStudy(item.dataset.id);
-                });
+            if (chartConfig.type === 'bar') {
+                chartOptions.scales = { 
+                    y: { 
+                        beginAtZero: chartConfig.data.every(d => d >= 0),
+                    } 
+                };
+            }
+
+            new Chart(ctx, {
+                type: chartConfig.type,
+                data: {
+                    labels: chartConfig.labels.map(label => label.length > 16 ? label.match(/.{1,16}/g) : label),
+                    datasets: [{
+                        data: chartConfig.data,
+                        backgroundColor: chartConfig.type === 'bar' ? '#4f46e5' : ['#4f46e5', '#6366f1', '#818cf8', '#a5b4fc'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                    }]
+                },
+                options: chartOptions
             });
         }
         
-        document.getElementById('menu-btn').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        });
+        function setupScrollSpy() {
+            const sections = document.querySelectorAll('.case-section, .tribute-section');
+            const navLinks = document.querySelectorAll('.timeline-nav a');
 
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('mobile-menu').classList.add('hidden');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const visibleId = entry.target.id;
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === visibleId);
+                        });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
             });
-        });
+        }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            createTimeline();
-            displayCaseStudy('blockbuster');
-        });
+        buildPage();
+        setupScrollSpy();
+
     </script>
 </body>
 </html>
